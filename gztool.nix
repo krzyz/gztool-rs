@@ -5,6 +5,9 @@
   autoreconfHook,
   zlib-ng,
 }:
+let
+  patch-file = ./patches/0001-Ensure-that-stdout-does-not-get-closed.patch;
+in
 stdenv.mkDerivation rec {
   pname = "gztool";
   version = "v1.8.0";
@@ -24,8 +27,13 @@ stdenv.mkDerivation rec {
     (zlib-ng.override { withZlibCompat = true; })
   ];
 
+  patches = [
+    patch-file
+  ];
+
   postInstall = ''
     mkdir $out/include
     cp $src/gztool.c $out/include/gztool.c
+    patch $out/include/gztool.c ${patch-file}
   '';
 }

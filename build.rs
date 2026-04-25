@@ -13,14 +13,19 @@ fn main() {
         // The input header we would like to generate
         // bindings for.
         .header("include/wrapper.h")
+        // Include gztool.c for local cargo builds
+        // Note that nix build/run uses fetchGitHub source instead
+        .clang_arg("-Ideps/gztool")
         // Tell cargo to invalidate the built crate whenever any of the
         // included header files changed.
         .parse_callbacks(Box::new(bindgen::CargoCallbacks::new()))
         .wrap_static_fns(true)
         .wrap_static_fns_path(out_path.join("wrap_static_fns"))
+        .allowlist_var("verbosity_level")
         .allowlist_type("point")
         .allowlist_type("access")
         .allowlist_type("returned_output")
+        .allowlist_type("VERBOSITY_LEVEL")
         .allowlist_type("INDEX_AND_EXTRACTION_OPTIONS")
         .allowlist_function("create_empty_index")
         .allowlist_function("free_index")
@@ -34,6 +39,7 @@ fn main() {
         .allowlist_function("action_create_index")
         .allowlist_function("compress_file")
         .allowlist_function("decompress_file")
+        .allowlist_function("decompress_and_build_index")
         // Finish the builder and generate the bindings.
         .generate()
         // Unwrap the Result and panic on failure.

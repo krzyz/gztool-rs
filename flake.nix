@@ -36,8 +36,18 @@
           (crane.mkLib nixpkgs.legacyPackages.${system}).overrideToolchain
             fenix.packages.${system}.stable.toolchain;
 
+        unfilteredRoot = ./.; # The original, unfiltered source
+        src = lib.fileset.toSource {
+          root = unfilteredRoot;
+          fileset = lib.fileset.unions [
+            # Default files from crane (Rust and cargo files)
+            (craneLib.fileset.commonCargoSources unfilteredRoot)
+            (lib.fileset.maybeMissing ./include)
+          ];
+        };
+
         commonArgs = {
-          src = craneLib.cleanCargoSource ./.;
+          inherit src;
 
           nativeBuildInputs = with pkgs; [
             zlib-ng-compat
@@ -46,10 +56,14 @@
           ];
 
           buildInputs = with pkgs; [
+            pkg-config
+            openssl
           ];
         };
 
         runtimeLibDeps = with pkgs; [
+          openssl
+          zlib-ng-compat
         ];
 
         runtimeBinDeps = with pkgs; [
@@ -68,6 +82,8 @@
         );
       in
       {
+        inherit runtimeLibDeps;
+
         checks = {
           inherit gztool-rs;
         };
@@ -99,9 +115,9 @@
               lib.makeLibraryPath (
                 with pkgs;
                 [
-                  zlib-ng-compat
                   gztool
                 ]
+                ++ runtimeLibDeps
               )
             }";
           };

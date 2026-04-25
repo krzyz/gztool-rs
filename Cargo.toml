@@ -3,8 +3,17 @@ name = "gztool-rs"
 version = "0.1.0"
 edition = "2024"
 
+[lib]
+
 [dependencies]
+bytes = "1.11.1"
+libc = "0.2.186"
+thiserror = "2.0.18"
 
 [build-dependencies]
 bindgen = "0.72.1"
 cc = "1.2.61"
+
+[dev-dependencies]
+flate2 = "1.1.9"
+tempfile = "3.27.0"

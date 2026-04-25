@@ -1,0 +1,52 @@
+From 5ae58941bac925943cf9241a6d42a7de9fc584a5 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Krzysztof=20Biedro=C5=84?= <arkendil@gmail.com>
+Date: Tue, 28 Apr 2026 10:40:58 +0200
+Subject: [PATCH] Ensure that stdout does not get closed
+
+---
+ gztool.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/gztool.c b/gztool.c
+index 06df715..c839ebc 100644
+--- a/gztool.c
++++ b/gztool.c
+@@ -3244,7 +3244,7 @@ decompress_and_build_index_Set_next_good_decompression_point:
+         }
+     }
+ 
+-    if ( NULL != index_file )
++    if ( NULL != index_file && stdout != index_file )
+         fclose(index_file);
+ 
+     // print output_data_counter info
+@@ -3323,7 +3323,7 @@ decompress_and_build_index_Set_next_good_decompression_point:
+             free_index(index);
+         *built = NULL;
+     }
+-    if (index_file != NULL)
++    if (index_file != NULL && index_file != stdout)
+         fclose(index_file);
+     return ret;
+ 
+@@ -4063,7 +4063,7 @@ local struct returned_output compress_and_build_index(
+         /* index is now complete */
+     }
+ 
+-    if ( NULL != index_file )
++    if ( NULL != index_file && stdout != index_file )
+         fclose(index_file);
+ 
+     // print totin info
+@@ -4142,7 +4142,7 @@ local struct returned_output compress_and_build_index(
+         *built = NULL;
+     }
+ 
+-    if ( NULL != index_file )
++    if ( NULL != index_file && stdout != index_file )
+         fclose(index_file);
+     if ( Z_OK == ret.error )
+         ret.error = Z_ERRNO;
+-- 
+2.53.0
+
