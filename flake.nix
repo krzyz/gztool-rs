@@ -82,6 +82,7 @@
         );
       in
       {
+        inherit (commonArgs) nativeBuildInputs;
         inherit runtimeLibDeps;
 
         checks = {
